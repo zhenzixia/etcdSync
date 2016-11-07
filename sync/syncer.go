@@ -45,7 +45,7 @@ func (s *syncer) Run(ctx context.Context) error{
 	if err != nil{
 		respSet, err := sourKapi.Set(ctx, "ATestKeyToGetTheLatestIndex", "", &client.SetOptions{})
 		if err != nil{
-			glog.Errorf("Failed to set key!", err)
+			glog.Errorf("Failed to set key!  %+v", err)
 			return err
 		}
 		latestIndex = respSet.Index
@@ -56,13 +56,13 @@ func (s *syncer) Run(ctx context.Context) error{
 	//Sync all
 	err = s.SyncAll(sourKapi, distKapi)
 	if err != nil{
-		glog.Errorf("Failed to sync all!", err)
+		glog.Errorf("Failed to sync all! %+v", err)
 		return err
 	}
 
 	err = <-errc
 	if err != nil{
-		glog.Errorf("Failed to sync updates!", err)
+		glog.Errorf("Failed to sync updates! %+v", err)
 		return err
 	}
 	return nil
@@ -91,12 +91,12 @@ func (s *syncer) SyncAll(sourKapi, distKapi client.KeysAPI) error{
 		if curNode.Dir == false{
 			_, err := distKapi.Set(context.TODO(), curNode.Key, curNode.Value, &client.SetOptions{})
 			if err != nil{
-				glog.Warning("error: %V, Key: ", err, curNode.Key)
+				glog.Warning("error: %+v, Key:  %+v", err, curNode.Key)
 			}
 		}else {
 			_, err := distKapi.Set(context.TODO(), curNode.Key, curNode.Value, &client.SetOptions{Dir: true,})
 			if err != nil{
-				glog.Warning("error: %V, Key: ", err, curNode.Key)
+				glog.Warning("error: %+v, Key:  %+v", err, curNode.Key)
 			}
 			for _, node := range curNode.Nodes {
 				queue = append(queue, node)
